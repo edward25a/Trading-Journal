@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trading Journal Pro</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="terminal-shell">
+      <section class="notes-dock">
+        <div class="save-toast" id="saveToast">Trade guardado</div>
+        <header class="dock-top">
+          <button class="nav-arrow" id="prevMonth" type="button" aria-label="Mes anterior">&lt;</button>
+          <div>
+            <p class="eyebrow">My Notes</p>
+            <h1 id="monthTitle">January 2025</h1>
+          </div>
+          <button class="nav-arrow" id="nextMonth" type="button" aria-label="Mes siguiente">&gt;</button>
+        </header>
+
+        <section class="summary-strip">
+          <article>
+            <span>Trades</span>
+            <strong id="totalTrades">0</strong>
+          </article>
+          <article>
+            <span>PnL mes</span>
+            <strong id="monthPnl">$0.00</strong>
+          </article>
+          <article>
+            <span>Winrate</span>
+            <strong id="winRate">0%</strong>
+          </article>
+        </section>
+
+        <section class="calendar-card">
+          <div class="calendar-head">
+            <div>
+              <p class="eyebrow calendar-eyebrow">Calendario</p>
+              <h2>Trades por dia</h2>
+            </div>
+            <div class="calendar-actions">
+              <button class="ghost-button" id="todayButton" type="button">Hoy</button>
+              <input id="monthPicker" type="month" />
+              <button class="primary-button" id="newTradeButton" type="button">Nuevo trade</button>
+            </div>
+          </div>
+          <div class="weekdays" aria-hidden="true">
+            <span>Lun</span>
+            <span>Mar</span>
+            <span>Mie</span>
+            <span>Jue</span>
+            <span>Vie</span>
+            <span>Sab</span>
+            <span>Dom</span>
+          </div>
+          <div class="calendar-grid" id="calendarGrid"></div>
+        </section>
+
+        <form class="note-editor" id="tradeForm">
+          <input id="tradeId" type="hidden" />
+          <div class="editor-head">
+            <div>
+              <p class="eyebrow">Nota del trade</p>
+              <h2 id="editorTitle">Nuevo registro</h2>
+            </div>
+            <span id="captureCount">0 de 1</span>
+          </div>
+
+          <label>
+            Titulo
+            <input id="titleInput" type="text" placeholder="Jan 7, 2025" />
+          </label>
+
+          <div class="form-grid">
+            <label>
+              Fecha
+              <input id="dateInput" type="date" required />
+            </label>
+            <label>
+              Hora
+              <input id="timeInput" type="time" />
+            </label>
+            <label>
+              Simbolo
+              <input id="assetInput" type="text" placeholder="XAUUSD" />
+            </label>
+              <label>
+                Direccion
+                <select id="directionInput">
+                  <option value="long">Compra</option>
+                  <option value="short">Venta</option>
+                </select>
+              </label>
+              <label>
+                Setup
+                <select id="setupInput">
+                  <option value="SMC liquidity sweep">SMC liquidity sweep</option>
+                  <option value="ICT FVG">ICT FVG</option>
+                  <option value="Breakout">Breakout</option>
+                  <option value="Pullback">Pullback</option>
+                  <option value="Reversal">Reversal</option>
+                </select>
+              </label>
+              <label>
+                Estado mental
+                <select id="emotionInput">
+                  <option value="calmado">Calmado</option>
+                  <option value="ansioso">Ansioso</option>
+                  <option value="impulsivo">Impulsivo</option>
+                  <option value="confiado">Confiado</option>
+                  <option value="cansado">Cansado</option>
+                </select>
+              </label>
+          </div>
+
+          <section class="upload-card">
+            <div class="capture-preview" id="capturePreview">
+              <span>Agregar captura de pantalla</span>
+            </div>
+            <input id="captureInput" type="file" accept="image/*" hidden />
+            <div class="upload-actions">
+              <button class="ghost-button" id="uploadButton" type="button">Subir captura</button>
+              <button class="ghost-button danger-text" id="removeCaptureButton" type="button">Quitar</button>
+            </div>
+            <p id="ocrStatus">Al subir una captura, la web intenta detectar simbolo, fecha, hora y precios.</p>
+          </section>
+
+          <section class="details-card">
+            <h3>Detalles</h3>
+            <div class="form-grid">
+              <label>
+                Precio inicial
+                <input id="entryInput" type="number" step="0.01" />
+              </label>
+              <label>
+                Stop price
+                <input id="stopInput" type="number" step="0.01" />
+              </label>
+              <label>
+                Precio Take Profit
+                <input id="targetInput" type="number" step="0.01" />
+              </label>
+              <label>
+                Riesgo/recompensa
+                <input id="rrInput" type="text" placeholder="Auto" />
+              </label>
+              <label>
+                PnL realizado
+                <input id="pnlInput" type="number" step="0.01" placeholder="Escribe el PnL cerrado" />
+              </label>
+              <label>
+                Balance actual
+                <input id="balanceInput" type="number" step="0.01" value="100" />
+              </label>
+              <label>
+                Capital inicial
+                <input id="startingBalanceInput" type="number" step="0.01" value="100" />
+              </label>
+              <label>
+                Error principal
+                <select id="mistakeInput">
+                  <option value="">Sin error marcado</option>
+                  <option value="entrada temprana">Entrada temprana</option>
+                  <option value="movio stop">Movio stop</option>
+                  <option value="sin confirmacion">Sin confirmacion</option>
+                  <option value="tarde al trade">Tarde al trade</option>
+                  <option value="sobreoperar">Sobreoperar</option>
+                </select>
+              </label>
+            </div>
+            <button class="ghost-button calc-button" id="calculatePnlButton" type="button">Calcular diferencia de balance</button>
+            <label>
+              Notas
+              <textarea id="notesInput" rows="3" placeholder="Contexto, ejecucion, errores y aprendizaje..."></textarea>
+            </label>
+          </section>
+
+          <div class="editor-actions">
+            <button class="ghost-button danger-text" id="deleteTradeButton" type="button">Borrar trade</button>
+            <button class="ghost-button danger-text" id="clearJournalButton" type="button">Limpiar journal</button>
+            <button class="ghost-button" id="cancelButton" type="button">Cancelar</button>
+            <button class="primary-button" type="submit">Guardar</button>
+          </div>
+        </form>
+
+        <section class="pdf-analyzer-card" aria-label="Dashboard del analizador">
+          <div class="editor-head">
+            <div>
+              <p class="eyebrow calendar-eyebrow">PDF / IA</p>
+              <h3>Dashboard del analizador</h3>
+            </div>
+            <span id="knowledgeCount">0 datos</span>
+          </div>
+          <div class="form-grid">
+            <label>
+              Nombre
+              <input id="analyzerTitleInput" type="text" placeholder="Analisis XAUUSD" />
+            </label>
+            <label>
+              Fecha
+              <input id="analyzerDateInput" type="date" />
+            </label>
+            <label>
+              Simbolo
+              <input id="analyzerAssetInput" type="text" placeholder="XAUUSD" />
+            </label>
+          </div>
+          <label>
+            Datos pegados
+            <textarea id="aiPromptInput" rows="5" placeholder='Pega aqui el JSON o datos que te dio la IA. Ejemplo: { "pnl": -41.25, "trades": 9, "grossProfit": 151.75 }'></textarea>
+          </label>
+          <div class="upload-actions">
+            <button class="ghost-button" id="copyAnalyzerPromptButton" type="button">Copiar prompt</button>
+            <button class="ghost-button" id="saveAiPromptButton" type="button">Guardar en historial</button>
+            <button class="ghost-button" id="applyAiPromptButton" type="button">Aplicar al trade</button>
+            <button class="ghost-button danger-text" id="clearAiPromptButton" type="button">Limpiar</button>
+          </div>
+          <p class="panel-note">Estos datos se guardan en el historial del analizador, no en el calendario.</p>
+        </section>
+
+        <section class="analyzer-history-card" aria-label="Historial del analizador">
+          <div class="editor-head">
+            <div>
+              <p class="eyebrow calendar-eyebrow">Historial</p>
+              <h3>Datos analizados</h3>
+            </div>
+          </div>
+          <div class="knowledge-list" id="knowledgeList"></div>
+        </section>
+      </section>
+
+      <section class="chart-area">
+        <header class="chart-topbar">
+          <div class="symbol-group">
+            <strong id="chartSymbol">XAUUSD</strong>
+            <span id="chartMeta">Diario operativo</span>
+          </div>
+          <div class="timeframes" id="timeframeButtons">
+            <button type="button" data-tf="1m">1m</button>
+            <button type="button" data-tf="3m">3m</button>
+            <button class="active" type="button" data-tf="5m">5m</button>
+            <button type="button" data-tf="15m">15m</button>
+            <button type="button" data-tf="1h">1h</button>
+            <button type="button" data-tf="4h">4h</button>
+          </div>
+          <div class="chart-actions">
+            <button class="ghost-button" id="goToButton" type="button">Go To</button>
+            <button class="ghost-button" id="placeOrderButton" type="button">Colocar una orden</button>
+            <button class="ghost-button" id="exportButton" type="button">Exportar CSV</button>
+          </div>
+          <p class="terminal-status" id="terminalStatus">Listo</p>
+        </header>
+
+        <section class="chart-stage">
+          <div id="tradeChart" role="region" aria-label="Grafico real de mercado"></div>
+        </section>
+
+        <section class="quant-console" aria-label="Analisis cuantitativo">
+          <article class="agent-panel">
+            <div>
+              <p class="eyebrow agent-eyebrow">QUANT Agent</p>
+              <h2 id="agentTitle">Analisis del journal</h2>
+            </div>
+            <p id="agentInsight">Registra trades para detectar patrones de ejecucion, riesgo y consistencia.</p>
+          </article>
+          <article>
+            <span>Score proceso</span>
+            <strong id="processScore">0/100</strong>
+            <small id="processLabel">Sin datos</small>
+          </article>
+          <article>
+            <span>Profit factor</span>
+            <strong id="profitFactor">0.00</strong>
+            <small id="profitFactorLabel">Mes actual</small>
+          </article>
+          <article>
+            <span>Max drawdown</span>
+            <strong id="maxDrawdown">$0.00</strong>
+            <small id="drawdownLabel">Balance cerrado</small>
+          </article>
+          <article class="action-panel">
+            <span>Accion sugerida</span>
+            <strong id="nextAction">Completa tu primer trade real.</strong>
+          </article>
+        </section>
+
+        <footer class="replay-bar">
+          <div class="replay-controls">
+            <button type="button" data-replay="prev">&lt;</button>
+            <button type="button" data-replay="play">Play</button>
+            <button type="button" data-replay="next">&gt;</button>
+            <span>1m</span>
+            <label class="switch">
+              <input type="checkbox" checked />
+              <span></span>
+            </label>
+          </div>
+          <div class="account-metrics">
+            <article>
+              <span>Balance actual</span>
+              <strong id="metricBalance">$100.00</strong>
+              <button class="metric-link" id="adjustBalanceButton" type="button">Ajustar</button>
+            </article>
+            <article>
+              <span>Realized PnL</span>
+              <strong id="metricPnl">$0.00</strong>
+            </article>
+            <article>
+              <span>Unrealized PnL</span>
+              <strong id="metricUnrealized">$0.00</strong>
+            </article>
+          </div>
+        </footer>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
